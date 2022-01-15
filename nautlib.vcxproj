@@ -148,10 +148,11 @@
   <ItemGroup>
     <ClInclude Include="src\base.hpp" />
     <ClInclude Include="src\amath.hpp" />
-    <ClInclude Include="src\freeSpace.hpp" />
+    <ClInclude Include="src\freespace.hpp" />
     <ClInclude Include="src\matrix.hpp" />
     <ClInclude Include="src\space.hpp" />
     <ClInclude Include="src\vector.hpp" />
+    <ClInclude Include="src\random.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
