@@ -63,7 +63,7 @@ namespace nl {
 	};
 
 	constexpr u64 bitshuffle(u64 val) {
-		u32 x = (val << 32) | (val >> 32);
+		u64 x = (val << 32) | (val >> 32);
 		x = (x & 0x00000000ffff0000) << 16 | (x >> 16) & 0x00000000ffff0000 | x & 0xffff00000000ffff;
 		x = (x & 0x0000ff000000ff00) << 8 | (x >> 8) & 0x0000ff000000ff00 | x & 0xff0000ffff0000ff;
 		x = (x & 0x00f000f000f000f0) << 4 | (x >> 4) & 0x00f000f000f000f0 | x & 0xf00ff00ff00ff00f;
@@ -104,20 +104,171 @@ namespace nl {
 		return 6364136223846793005 * seed + 100000001;
 	};
 
+	constexpr u8 quarter_u8(u8 seed) {
+		seed = bitshuffle(seed);
+
+		u8 q0 = (seed & 0x03);
+		u8 q1 = (seed & 0x0c) >> 2;
+		u8 q2 = (seed & 0x30) >> 4;
+		u8 q3 = (seed & 0xc0) >> 6;
+
+		return (q1 ^ q2 ^ q3) ^ ((q2 ^ q3 ^ q0) << 2) ^ ((q3 ^ q0 ^ q1) << 4) ^ ((q0 ^ q1 ^ q2) << 6);
+	};
+
+	constexpr u16 quarter_u16(u16 seed) {
+		seed = bitshuffle(seed);
+
+		u16 q0 = (seed & 0x000f);
+		u16 q1 = (seed & 0x00f0) >> 4;
+		u16 q2 = (seed & 0x0f00) >> 8;
+		u16 q3 = (seed & 0xf000) >> 12;
+
+		return (q1 ^ q2 ^ q3) ^ ((q2 ^ q3 ^ q0) << 4) ^ ((q3 ^ q0 ^ q1) << 8) ^ ((q0 ^ q1 ^ q2) << 12);
+	};
+
+	constexpr u32 quarter_u32(u32 seed) {
+		seed = bitshuffle(seed);
+
+		u32 q0 = (seed & 0x000000ff);
+		u32 q1 = (seed & 0x0000ff00) >> 8;
+		u32 q2 = (seed & 0x00ff0000) >> 16;
+		u32 q3 = (seed & 0xff000000) >> 24;
+
+		return (q1 ^ q2 ^ q3) ^ ((q2 ^ q3 ^ q0) << 8) ^ ((q3 ^ q0 ^ q1) << 16) ^ ((q0 ^ q1 ^ q2) << 24);
+	};
+
+	constexpr u64 quarter_u64(u64 seed) {
+		seed = bitshuffle(seed);
+
+		u64 q0 = (seed & 0x000000000000ffff);
+		u64 q1 = (seed & 0x00000000ffff0000) >> 16;
+		u64 q2 = (seed & 0x0000ffff00000000) >> 32;
+		u64 q3 = (seed & 0xffff000000000000) >> 48;
+
+		return (q1 ^ q2 ^ q3) ^ ((q2 ^ q3 ^ q0) << 16) ^ ((q3 ^ q0 ^ q1) << 32) ^ ((q0 ^ q1 ^ q2) << 48);
+	};
+
+	constexpr u8 eighth_u8(u8 seed) {
+		seed = bitshuffle(seed);
+
+		u8 e0 = (seed & 0x01);
+		u8 e1 = (seed & 0x02) >> 1;
+		u8 e2 = (seed & 0x04) >> 2;
+		u8 e3 = (seed & 0x08) >> 3;
+		u8 e4 = (seed & 0x10) >> 4;
+		u8 e5 = (seed & 0x20) >> 5;
+		u8 e6 = (seed & 0x40) >> 6;
+		u8 e7 = (seed & 0x80) >> 7;
+
+		return (e1 ^ e2 ^ e3 ^ e4 ^ e5 ^ e6 ^ e7) ^ ((e2 ^ e3 ^ e4 ^ e5 ^ e6 ^ e7 ^ e0) << 1) ^ ((e3 ^ e4 ^ e5 ^ e6 ^ e7 ^ e0 ^ e1) << 2) ^ ((e4 ^ e5 ^ e6 ^ e7 ^ e0 ^ e1 ^ e2) << 3) ^ ((e5 ^ e6 ^ e7 ^ e0 ^ e1 ^ e2 ^ e3) << 4) ^ ((e6 ^ e7 ^ e0 ^ e1 ^ e2 ^ e3 ^ e4) << 5) ^ ((e7 ^ e0 ^ e1 ^ e2 ^ e3 ^ e4 ^ e5) << 6) ^ ((e0 ^ e1 ^ e2 ^ e3 ^ e4 ^ e5 ^ e6) << 7);
+	};
+
+	constexpr u16 eighth_u16(u16 seed) {
+		seed = bitshuffle(seed);
+
+		u16 e0 = (seed & 0x0003);
+		u16 e1 = (seed & 0x00c) >> 2;
+		u16 e2 = (seed & 0x0030) >> 4;
+		u16 e3 = (seed & 0x00c0) >> 6;
+		u16 e4 = (seed & 0x0300) >> 8;
+		u16 e5 = (seed & 0x0c00) >> 10;
+		u16 e6 = (seed & 0x3000) >> 12;
+		u16 e7 = (seed & 0xc000) >> 14;
+
+		return (e1 ^ e2 ^ e3 ^ e4 ^ e5 ^ e6 ^ e7) ^ ((e2 ^ e3 ^ e4 ^ e5 ^ e6 ^ e7 ^ e0) << 2) ^ ((e3 ^ e4 ^ e5 ^ e6 ^ e7 ^ e0 ^ e1) << 4) ^ ((e4 ^ e5 ^ e6 ^ e7 ^ e0 ^ e1 ^ e2) << 6) ^ ((e5 ^ e6 ^ e7 ^ e0 ^ e1 ^ e2 ^ e3) << 8) ^ ((e6 ^ e7 ^ e0 ^ e1 ^ e2 ^ e3 ^ e4) << 10) ^ ((e7 ^ e0 ^ e1 ^ e2 ^ e3 ^ e4 ^ e5) << 12) ^ ((e0 ^ e1 ^ e2 ^ e3 ^ e4 ^ e5 ^ e6) << 14);
+	};
+
+	constexpr u32 eighth_u32(u32 seed) {
+		seed = bitshuffle(seed);
+
+		u32 e0 = (seed & 0x0000000f);
+		u32 e1 = (seed & 0x000000f0) >> 4;
+		u32 e2 = (seed & 0x00000f00) >> 8;
+		u32 e3 = (seed & 0x0000f000) >> 12;
+		u32 e4 = (seed & 0x000f0000) >> 16;
+		u32 e5 = (seed & 0x00f00000) >> 20;
+		u32 e6 = (seed & 0x0f000000) >> 24;
+		u32 e7 = (seed & 0xf0000000) >> 28;
+
+		return (e1 ^ e2 ^ e3 ^ e4 ^ e5 ^ e6 ^ e7) ^ ((e2 ^ e3 ^ e4 ^ e5 ^ e6 ^ e7 ^ e0) << 4) ^ ((e3 ^ e4 ^ e5 ^ e6 ^ e7 ^ e0 ^ e1) << 8) ^ ((e4 ^ e5 ^ e6 ^ e7 ^ e0 ^ e1 ^ e2) << 12) ^ ((e5 ^ e6 ^ e7 ^ e0 ^ e1 ^ e2 ^ e3) << 16) ^ ((e6 ^ e7 ^ e0 ^ e1 ^ e2 ^ e3 ^ e4) << 20) ^ ((e7 ^ e0 ^ e1 ^ e2 ^ e3 ^ e4 ^ e5) << 24) ^ ((e0 ^ e1 ^ e2 ^ e3 ^ e4 ^ e5 ^ e6) << 28);
+	};
+
+	constexpr u64 eighth_u64(u64 seed) {
+		seed = bitshuffle(seed);
+
+		u64 e0 = (seed & 0x00000000000000ff);
+		u64 e1 = (seed & 0x000000000000ff00) >> 8;
+		u64 e2 = (seed & 0x0000000000ff0000) >> 16;
+		u64 e3 = (seed & 0x00000000ff000000) >> 24;
+		u64 e4 = (seed & 0x000000ff00000000) >> 32;
+		u64 e5 = (seed & 0x0000ff0000000000) >> 40;
+		u64 e6 = (seed & 0x00ff000000000000) >> 48;
+		u64 e7 = (seed & 0xff00000000000000) >> 56;
+
+		return (e1 ^ e2 ^ e3 ^ e4 ^ e5 ^ e6 ^ e7) ^ ((e2 ^ e3 ^ e4 ^ e5 ^ e6 ^ e7 ^ e0) << 8) ^ ((e3 ^ e4 ^ e5 ^ e6 ^ e7 ^ e0 ^ e1) << 16) ^ ((e4 ^ e5 ^ e6 ^ e7 ^ e0 ^ e1 ^ e2) << 24) ^ ((e5 ^ e6 ^ e7 ^ e0 ^ e1 ^ e2 ^ e3) << 32) ^ ((e6 ^ e7 ^ e0 ^ e1 ^ e2 ^ e3 ^ e4) << 40) ^ ((e7 ^ e0 ^ e1 ^ e2 ^ e3 ^ e4 ^ e5) << 48) ^ ((e0 ^ e1 ^ e2 ^ e3 ^ e4 ^ e5 ^ e6) << 56);
+	};
+
+	constexpr u8 deprime_u8(u8 seed) {
+		u8 p_3 = seed % 3;
+		seed /= 3;
+		u8 p_5 = seed % 5;
+		seed /= 5;
+		u8 p_17 = seed % 17;
+
+		p_3 = (2 * p_3 + 1) % 3;
+		p_5 = (3 * p_5 + 1) % 5;
+		p_17 = (11 * p_17 + 1) % 17;
+
+		return (p_5 * 3 + p_3) * 17 + p_17;
+	};
+
+	constexpr u16 deprime_u16(u16 seed) {
+		u16 p_3 = seed % 3;
+		seed /= 3;
+		u16 p_5 = seed % 5;
+		seed /= 5;
+		u16 p_17 = seed % 17;
+		seed /= 17;
+		u16 p_257 = seed % 257;
+
+		p_3 = (2 * p_3 + 1) % 3;
+		p_5 = (3 * p_5 + 1) % 5;
+		p_17 = (11 * p_17 + 1) % 17;
+		p_257 = (19 * p_257 + 1) % 257;
+
+		return ((p_5 * 17 + p_17) * 3 + p_3) * 257 + p_257;
+	};
+
+	constexpr u32 deprime_u32(u32 seed) {
+		u32 p_3 = seed % 3;
+		seed /= 3;
+		u32 p_5 = seed % 5;
+		seed /= 5;
+		u32 p_17 = seed % 17;
+		seed /= 17;
+		u32 p_257 = seed % 257;
+		seed /= 257;
+		u32 p_65537 = seed % 65537;
+
+		p_3 = (2 * p_3 + 1) % 3;
+		p_5 = (3 * p_5 + 1) % 5;
+		p_17 = (11 * p_17 + 1) % 17;
+		p_257 = (19 * p_257 + 1) % 257;
+		p_65537 = (263 * p_65537 + 1) % 65537;
+
+		return (((p_5 * 17 + p_17) * 257 + p_257) * 3 + p_3) * 65537 + p_65537;
+	};
+
 	constexpr u8 random_u8(u8 seed) {
-		return randombit_u8(randomlcg_u8(seed));
+		return quarter_u8(deprime_u8(seed));
 	};
 
 	constexpr u16 random_u16(u16 seed) {
-		return randombit_u16(randomlcg_u16(seed));
+		return quarter_u16(deprime_u16(seed));
 	};
 
 	constexpr u32 random_u32(u32 seed) {
-		return randombit_u32(randomlcg_u32(seed));
-	};
-
-	constexpr u64 random_u64(u64 seed) {
-		return randombit_u64(randomlcg_u64(seed));
+		return quarter_u32(deprime_u32(seed));
 	};
 };
 

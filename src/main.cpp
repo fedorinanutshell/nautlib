@@ -19,13 +19,13 @@ int main() {
 	//std::vector<float> f;
 	//std::vector<float> s;
 
-	for (nl::u8 i = 0; i < 128; i++) {
-		nl::u8 nf = nl::random_u8(i);
+	for (nl::u16 i = 0; i < 4096; i++) {
+		auto nf = nl::random_u16(i);
 		//float ns = nl::randomfloat_normal(nl::randombase_u32(i));
 		//in.push_back(i);
 		//f.push_back(nf);
 		//s.push_back(ns);
-		std::cout << std::hex << nl::u64(i) << " " << nl::u64(nf) << "\n";
+		std::cout << nl::u64(i) << " " << nl::u64(nf) << "\n";
 	};
 
 	//std::cout << "\n";
