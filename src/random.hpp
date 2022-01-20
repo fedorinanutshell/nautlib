@@ -2,6 +2,7 @@
 #define XORSHIFT_INCLUDED
 
 #include "base.hpp"
+#include "amath.hpp"
 
 namespace nl {
 	constexpr u8 reverse(u8 val) {
@@ -269,6 +270,30 @@ namespace nl {
 
 	constexpr u32 random_u32(u32 seed) {
 		return quarter_u32(deprime_u32(seed));
+	};
+
+	constexpr s8 random_s8(u8 seed) {
+		return s16(random_u8(seed)) - 128;
+	};
+
+	constexpr s16 random_s16(u16 seed) {
+		return s32(random_u16(seed)) - 32768;
+	};
+
+	constexpr s32 random_s32(u32 seed) {
+		return s64(random_u32(seed)) - 2147483648;
+	};
+
+	constexpr float random_ufloat(u32 seed) {
+		return float(random_u32(seed)) / float(random_u32(~seed));
+	};
+
+	constexpr float random_sfloat(u32 seed) {
+		return float(random_s32(seed)) / float(random_s32(~seed));
+	};
+
+	constexpr float random_float(u32 seed) {
+		return afract(float(random_u32(seed)) / float(random_u32(std::rotl(seed, 16))));
 	};
 };
 

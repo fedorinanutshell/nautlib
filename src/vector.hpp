@@ -3,6 +3,7 @@
 
 #include <array>
 #include <iostream>
+#include <unordered_set>
 
 #include "base.hpp"
 
@@ -269,6 +270,31 @@ namespace nl {
 	template<typename T> using vec4 = vector<T, 4>;
 	template<typename T> using vec5 = vector<T, 5>;
 	template<typename T> using vec6 = vector<T, 6>;
+};
+
+template<typename T, nl::u32 X> bool operator==(const nl::vector<T, X>& lvec, const nl::vector<T, X>& rvec) {
+	bool equal = true;
+	auto comp = [&rvec, &equal](const T& val, const nl::u32& ix) mutable { equal &= (val == rvec[ix]); };
+	lvec.forEach(comp);
+	return equal;
+};
+
+template<typename T, nl::u32 X> struct std::equal_to<nl::vector<T, X>> {
+	bool operator()(const nl::vector<T, X>& lvec, const nl::vector<T, X>& rvec) const {
+		bool equal = true;
+		auto comp = [&rvec, &equal](const T& val, const nl::u32& ix) mutable { equal &= (val == rvec[ix]); };
+		lvec.forEach(comp);
+		return equal;
+	};
+};
+
+template<typename T, nl::u32 X> struct std::hash<nl::vector<T, X>> {
+	std::size_t operator()(nl::vector<T, X> const& vec) const {
+		std::size_t res;
+		auto hash = [&res](const T& val, const nl::u32& ix) mutable { res <<= 1; res ^= std::hash<T>{}(val); };
+		vec.forEach(hash);
+		return res;
+	};
 };
 
 #endif

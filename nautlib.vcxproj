@@ -148,8 +148,12 @@
   <ItemGroup>
     <ClInclude Include="src\base.hpp" />
     <ClInclude Include="src\amath.hpp" />
+    <ClInclude Include="src\file.hpp" />
     <ClInclude Include="src\freespace.hpp" />
+    <ClInclude Include="src\interpolation.hpp" />
     <ClInclude Include="src\matrix.hpp" />
+    <ClInclude Include="src\mesh.hpp" />
+    <ClInclude Include="src\noise.hpp" />
     <ClInclude Include="src\space.hpp" />
     <ClInclude Include="src\vector.hpp" />
     <ClInclude Include="src\random.hpp" />
