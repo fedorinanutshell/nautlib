@@ -1,5 +1,4 @@
-#ifndef FREESPACE_INCLUDED
-#define FREESPACE_INCLUDED
+#pragma once
 
 #include <vector>
 #include <iostream>
@@ -18,28 +17,28 @@ namespace nl {
 		u32 h;
 		u32 d;
 
-		constexpr u32 resize(const u32& x, const u32& y, const u32& z) {
+		constexpr u32 resize(u32 x, u32 y, u32 z) {
 			l = x; h = y; d = z;
 			vec.resize(x * y * z);
 			return x * y * z;
 		};
 
-		constexpr T& ref(const u32& i) { return vec[i]; };
-		constexpr T ref(const u32& i) const { return vec[i]; };
+		constexpr T& ref(u32 i) { return vec[i]; };
+		constexpr T ref(u32 i) const { return vec[i]; };
 
-		constexpr T& ref(const u32& ix, const u32& iy, const u32& iz) {
+		constexpr T& ref(u32 ix, u32 iy, u32 iz) {
 			if (ix < l || iy < h || iz < d) {
-				return ref(iz * h * l + iy * l + ix);
+				return ref(iy * d * l + iz * l + ix);
 			}
 			else {
 				resize(ix, iy, iz);
-				ref(iz * h * l + iy * l + ix) = T();
-				return ref(iz * h * l + iy * l + ix);
+				ref(iy * d * l + iz * l + ix) = T();
+				return ref(iy * d * l + iz * l + ix);
 			};
 		};
-		constexpr T ref(const u32& ix, const u32& iy, const u32& iz) const {
+		constexpr T ref(u32 ix, u32 iy, u32 iz) const {
 			if (ix < l || iy < h || iz < d) {
-				return ref(iz * h * l + iy * l + ix);
+				return ref(iy * d * l + iz * l + ix);
 			}
 			else {
 				return T();
@@ -66,11 +65,11 @@ namespace nl {
 		constexpr u32 volume() { return vec.size(); };
 		constexpr u32 volume() const { return vec.size(); };
 
-		constexpr T& operator[](const u32& i) { return ref(i); };
-		constexpr T operator[](const u32& i) const { return ref(i); };
+		constexpr T& operator[](u32 i) { return ref(i); };
+		constexpr T operator[](u32 i) const { return ref(i); };
 
-		constexpr T& operator()(const u32& ix, const u32& iy, const u32& iz) { return ref(ix, iy, iz); };
-		constexpr T operator()(const u32& ix, const u32& iy, const u32& iz) const { return ref(ix, iy, iz); };
+		constexpr T& operator()(u32 ix, u32 iy, u32 iz) { return ref(ix, iy, iz); };
+		constexpr T operator()(u32 ix, u32 iy, u32 iz) const { return ref(ix, iy, iz); };
 
 		constexpr T& operator[](const fspCoord& ic) { return ref(ic); };
 		constexpr T operator[](const fspCoord& ic) const { return ref(ic); };
@@ -78,8 +77,8 @@ namespace nl {
 		constexpr freeSpace(const freeSpace& srcFSP) { vec = srcFSP.vec; };
 
 		constexpr void forEach(auto fun) {
-			for (u32 iz = 0; iz < d; iz++) {
-				for (u32 iy = 0; iy < h; iy++) {
+			for (u32 iy = 0; iy < h; iy++) {
+				for (u32 iz = 0; iz < d; iz++) {
 					for (u32 ix = 0; ix < l; ix++) {
 						fun(ref(ix, iy, iz), ix, iy, iz);
 					};
@@ -87,8 +86,8 @@ namespace nl {
 			};
 		};
 		constexpr void forEach(auto fun) const {
-			for (u32 iz = 0; iz < d; iz++) {
-				for (u32 iy = 0; iy < h; iy++) {
+			for (u32 iy = 0; iy < h; iy++) {
+				for (u32 iz = 0; iz < d; iz++) {
 					for (u32 ix = 0; ix < l; ix++) {
 						fun(ref(ix, iy, iz), ix, iy, iz);
 					};
@@ -96,24 +95,22 @@ namespace nl {
 			};
 		};
 
-		constexpr freeSpace(const std::vector<T>& srcVec, const u32& x, const u32& y, const u32& z) {
+		constexpr freeSpace(const std::vector<T>& srcVec, u32 x, u32 y, u32 z) {
 			resize(x, y, z);
-			auto constr = [&srcVec](T& val, const u32& ix, const u32& iy, const u32& iz) { val = srcVec(iz * y * x + iy * x + ix); };
+			auto constr = [&srcVec](T& val, u32 ix, u32 iy, u32 iz) { val = srcVec(iy * z * x + iz * x + ix); };
 			forEach(constr);
 		}
 
-		constexpr freeSpace(const T& fill, const u32& x, const u32& y, const u32& z) {
+		constexpr freeSpace(const T& fill, u32 x, u32 y, u32 z) {
 			resize(x, y, z);
-			auto fillf = [&fill](T& val, const u32& ix, const u32& iy, const u32& iz) { val = fill; };
+			auto fillf = [&fill](T& val, u32 ix, u32 iy, u32 iz) { val = fill; };
 			forEach(fillf);
 		};
 	};
 };
 
 template<typename T> std::ostream& operator<<(std::ostream& out, const nl::freeSpace<T>& fsp) {
-	auto log = [&out, &fsp](const T& val, const nl::u32& ix, const nl::u32& iy, const nl::u32& iz) mutable { out << val << (ix == (fsp.length() - 1) ? (iy == (fsp.height() - 1) ? (iz == (fsp.depth() - 1) ? "" : "\n\n") : "\n") : " "); };
+	auto log = [&out, &fsp](const T& val, nl::u32 ix, nl::u32 iy, nl::u32 iz) mutable { out << val << (ix == (fsp.length() - 1) ? (iy == (fsp.height() - 1) ? (iz == (fsp.depth() - 1) ? "" : "\n\n") : "\n") : " "); };
 	fsp.forEach(log);
 	return out << "\n";
 };
-
-#endif

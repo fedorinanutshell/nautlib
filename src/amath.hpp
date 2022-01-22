@@ -1,5 +1,4 @@
-#ifndef AMATH_INCLUDED
-#define AMATH_INCLUDED
+#pragma once
 
 #include <numeric>
 
@@ -15,5 +14,3 @@ namespace nl {
 		return afract(div);
 	};
 };
-
-#endif

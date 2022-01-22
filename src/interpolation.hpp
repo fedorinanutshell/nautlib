@@ -1,5 +1,4 @@
-#ifndef INTERPOLATION_INCLUDED
-#define INTERPOLATION_INCLUDED
+#pragma once
 
 #include "base.hpp"
 #include "amath.hpp"
@@ -13,29 +12,29 @@ namespace nl {
 		return linearInterpolation(a, b, pos, 1.0f);
 	};
 
-	constexpr float bilinearInterpolation(float aa, float ba, float ab, float bb, vec2<float> pos, vec2<float> range) {
+	constexpr float bilinearInterpolation(float aa, float ba, float ab, float bb, const vec2<float>& pos, const vec2<float>& range) {
 		float ia = linearInterpolation(aa, ba, pos[0], range[0]);
 		float ib = linearInterpolation(ab, bb, pos[0], range[0]);
 
 		return linearInterpolation(ia, ib, pos[1], range[1]);
 	};
-	constexpr float bilinearInterpolation(float aa, float ba, float ab, float bb, vec2<float> pos, float range) {
+	constexpr float bilinearInterpolation(float aa, float ba, float ab, float bb, const vec2<float>& pos, float range) {
 		return bilinearInterpolation(aa, ba, ab, bb, pos, vec2<float>(range));
 	};
-	constexpr float bilinearInterpolation(float aa, float ba, float ab, float bb, vec2<float> pos) {
+	constexpr float bilinearInterpolation(float aa, float ba, float ab, float bb, const vec2<float>& pos) {
 		return bilinearInterpolation(aa, ba, ab, bb, pos, vec2<float>(1.0f));
 	};
 
-	constexpr float trilinearInterpolation(float aaa, float baa, float aba, float bba, float aab, float bab, float abb, float bbb, vec3<float> pos, vec3<float> range) {
+	constexpr float trilinearInterpolation(float aaa, float baa, float aba, float bba, float aab, float bab, float abb, float bbb, const vec3<float>& pos, const vec3<float>& range) {
 		float iia = bilinearInterpolation(aaa, baa, aba, bba, vec2<float>({ pos[0], pos[1] }), vec2<float>({ range[0], range[1] }));
 		float iib = bilinearInterpolation(aab, bab, abb, bbb, vec2<float>({ pos[0], pos[1] }), vec2<float>({ range[0], range[1] }));
 
 		return linearInterpolation(iia, iib, pos[2], range[2]);
 	};
-	constexpr float trilinearInterpolation(float aaa, float baa, float aba, float bba, float aab, float bab, float abb, float bbb, vec3<float> pos, float range) {
+	constexpr float trilinearInterpolation(float aaa, float baa, float aba, float bba, float aab, float bab, float abb, float bbb, const vec3<float>& pos, float range) {
 		return trilinearInterpolation(aaa, baa, aba, bba, aab, bab, abb, bbb, pos, vec2<float>(range));
 	};
-	constexpr float trilinearInterpolation(float aaa, float baa, float aba, float bba, float aab, float bab, float abb, float bbb, vec3<float> pos) {
+	constexpr float trilinearInterpolation(float aaa, float baa, float aba, float bba, float aab, float bab, float abb, float bbb, const vec3<float>& pos) {
 		return trilinearInterpolation(aaa, baa, aba, bba, aab, bab, abb, bbb, pos, 1.0f);
 	};
 
@@ -58,7 +57,7 @@ namespace nl {
 		float ab, float bb, float cb, float db,
 		float ac, float bc, float cc, float dc,
 		float ad, float bd, float cd, float dd,
-		vec2<float> pos, vec2<float> range) {
+		const vec2<float>& pos, const vec2<float>& range) {
 		float ia = cubicInterpolation(aa, ba, ca, da, pos[0], range[0]);
 		float ib = cubicInterpolation(ab, bb, cb, db, pos[0], range[0]);
 		float ic = cubicInterpolation(ac, bc, cc, dc, pos[0], range[0]);
@@ -71,7 +70,7 @@ namespace nl {
 		float ab, float bb, float cb, float db,
 		float ac, float bc, float cc, float dc,
 		float ad, float bd, float cd, float dd,
-		vec2<float> pos, float range) {
+		const vec2<float>& pos, float range) {
 		return bicubicInterpolation(aa, ba, ca, da, ab, bb, cb, db, ac, bc, cc, dc, ad, bd, cd, dd, pos, vec2<float>(range));
 	};
 	constexpr float bicubicInterpolation(
@@ -79,9 +78,7 @@ namespace nl {
 		float ab, float bb, float cb, float db,
 		float ac, float bc, float cc, float dc,
 		float ad, float bd, float cd, float dd,
-		vec2<float> pos) {
+		const vec2<float>& pos) {
 		return bicubicInterpolation(aa, ba, ca, da, ab, bb, cb, db, ac, bc, cc, dc, ad, bd, cd, dd, pos, 1.0f);
 	};
-};
-
-#endif
+};\

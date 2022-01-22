@@ -1,5 +1,4 @@
-#ifndef BASE_INCLUDED
-#define BASE_INCLUDED
+#pragma once
 
 #include <cstdint>
 
@@ -14,5 +13,3 @@ namespace nl {
 	using s32 = std::int32_t;
 	using s64 = std::int64_t;
 };
-
-#endif

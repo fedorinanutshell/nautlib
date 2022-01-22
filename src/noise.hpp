@@ -1,5 +1,4 @@
-#ifndef NOISE_INCLUDED
-#define NOISE_INCLUDED
+#pragma once
 
 #include <unordered_map>
 #include <numbers>
@@ -22,7 +21,7 @@ namespace nl {
 			seed = nl::random_u32(srcSeed);
 		};
 
-		float getLatticePoint(vec2<s32> coord) {
+		float getLatticePoint(const vec2<s32>& coord) {
 			if (map.contains(coord)) {
 				return map[coord];
 			}
@@ -36,7 +35,7 @@ namespace nl {
 			return getLatticePoint(vec2<s32>({ x, y }));
 		};
 
-		float getPoint(vec2<float> coord) {
+		float getPoint(const vec2<float>& coord) {
 			vec2<s32> icoord = coord;
 			vec2<float> fcoord = coord - vec2<float>(icoord);
 			float laa = getLatticePoint(icoord[0], icoord[1]);
@@ -64,12 +63,11 @@ namespace nl {
 			float cd = getLatticePoint(icoord[0] + 1, icoord[1] + 2);
 			float dd = getLatticePoint(icoord[0] + 2, icoord[1] + 2);
 
-			float cub = bicubicInterpolation(aa, ba, ca, da,
+			float res = bicubicInterpolation(aa, ba, ca, da,
 				ab, bb, cb, db,
 				ac, bc, cc, dc,
 				ad, bd, cd, dd, fcoord, 1.0f);
-			float lin = bilinearInterpolation(laa, lba, lab, lbb, fcoord);
-			return std::clamp(cub, 0.0f, 1.0f);
+			return res;
 		};
 	};
 
@@ -83,7 +81,7 @@ namespace nl {
 			seed = nl::random_u32(srcSeed);
 		};
 
-		float getLatticeAngle(vec2<s32> coord) {
+		float getLatticeAngle(const vec2<s32>& coord) {
 			if (map.contains(coord)) {
 				return map[coord];
 			}
@@ -97,7 +95,7 @@ namespace nl {
 			return getLatticeAngle(vec2<s32>({ x, y }));
 		};
 
-		vec2<float> getLatticeGradient(vec2<s32> coord) {
+		vec2<float> getLatticeGradient(const vec2<s32>& coord) {
 			float angle = getLatticeAngle(coord);
 			return vec2<float>({ std::cosf(angle), std::sinf(angle) }) / 1.0f;
 		};
@@ -105,7 +103,7 @@ namespace nl {
 			return getLatticeGradient(vec2<s32>({ x, y }));
 		};
 
-		float getRawPoint(vec2<s32> icoord, vec2<float> fcoord) {
+		float getRawPoint(const vec2<s32>& icoord, const vec2<float>& fcoord) {
 			vec2<float> delta = (fcoord - vec2<float>(icoord)) * 2.0f;
 			vec2<float> grad = getLatticeGradient(icoord);
 			return grad & delta;
@@ -114,14 +112,9 @@ namespace nl {
 			return getRawPoint(vec2<s32>({ ix, iy }), vec2<float>({ fx, fy }));
 		};
 
-		float getPoint(vec2<float> coord) {
+		float getPoint(const vec2<float>& coord) {
 			vec2<s32> icoord({ s32(std::floor(coord[0])), s32(std::floor(coord[1])) });
 			vec2<float> fcoord = coord - vec2<float>(icoord);
-
-			float laa = getRawPoint(icoord[0], icoord[1], coord[0], coord[1]);
-			float lab = getRawPoint(icoord[0], icoord[1] + 1, coord[0], coord[1]);
-			float lba = getRawPoint(icoord[0] + 1, icoord[1], coord[0], coord[1]);
-			float lbb = getRawPoint(icoord[0] + 1, icoord[1] + 1, coord[0], coord[1]);
 
 			float aa = getRawPoint(icoord[0] - 1, icoord[1] - 1, coord[0], coord[1]);
 			float ba = getRawPoint(icoord[0], icoord[1] - 1, coord[0], coord[1]);
@@ -143,12 +136,11 @@ namespace nl {
 			float cd = getRawPoint(icoord[0] + 1, icoord[1] + 2, coord[0], coord[1]);
 			float dd = getRawPoint(icoord[0] + 2, icoord[1] + 2, coord[0], coord[1]);
 
-			float cub = bicubicInterpolation(aa, ba, ca, da,
+			float res = bicubicInterpolation(aa, ba, ca, da,
 				ab, bb, cb, db,
 				ac, bc, cc, dc,
 				ad, bd, cd, dd, fcoord);
-			float lin = bilinearInterpolation(laa, lba, lab, lbb, fcoord);
-			return cub;
+			return res;
 		};
 	};
 
@@ -199,5 +191,3 @@ namespace nl {
 		};
 	};
 };
-
-#endif

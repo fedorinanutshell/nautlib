@@ -1,5 +1,4 @@
-#ifndef XORSHIFT_INCLUDED
-#define XORSHIFT_INCLUDED
+#pragma once
 
 #include "base.hpp"
 #include "amath.hpp"
@@ -296,5 +295,3 @@ namespace nl {
 		return afract(float(random_u32(seed)) / float(random_u32(std::rotl(seed, 16))));
 	};
 };
-
-#endif

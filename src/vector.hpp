@@ -1,5 +1,4 @@
-#ifndef VECTOR_INCLUDED
-#define VECTOR_INCLUDED
+#pragma once
 
 #include <array>
 #include <iostream>
@@ -12,27 +11,27 @@ namespace nl {
 	private:
 		std::array<T, X> arr;
 
-		constexpr T& ref(const u32& i) {
+		constexpr T& ref(u32 i) {
 			return arr[i];
 		};
-		constexpr T ref(const u32& i) const {
+		constexpr T ref(u32 i) const {
 			return arr[i];
 		};
 	public:
 		constexpr std::array<T, X> toArr() { return arr; };
 		constexpr std::array<T, X> toArr() const { return arr; };
 
-		constexpr T& operator[](const u32& i) {
+		constexpr T& operator[](u32 i) {
 			return ref(i);
 		};
-		constexpr T operator[](const u32& i) const {
+		constexpr T operator[](u32 i) const {
 			return ref(i);
 		};
 
-		constexpr T& operator()(const u32& ix) {
+		constexpr T& operator()(u32 ix) {
 			return ref(ix);
 		};
-		constexpr T operator()(const u32& ix) const {
+		constexpr T operator()(u32 ix) const {
 			return ref(ix);
 		};
 
@@ -58,49 +57,49 @@ namespace nl {
 		};
 
 		constexpr vector() {
-			auto init = [](T& val, const u32& ix) { val = static_cast<T>(0); };
+			auto init = [](T& val, u32 ix) { val = static_cast<T>(0); };
 			forEach(init);
 		};
 
 		constexpr vector(const T& srcVal) {
-			auto init = [&srcVal](T& val, const u32& ix) { val = srcVal; };
+			auto init = [&srcVal](T& val, u32 ix) { val = srcVal; };
 			forEach(init);
 		};
 
 		template<typename TT> constexpr vector(const vector<TT, X>& src) {
-			auto init = [&src](T& val, const u32& ix) { val = static_cast<T>(src[ix]); };
+			auto init = [&src](T& val, u32 ix) { val = static_cast<T>(src[ix]); };
 			forEach(init);
 		};
 
 		template<typename TT> constexpr vector(const std::array<TT, X>& srcArr) {
-			auto init = [&srcArr](T& val, const u32& ix) { val = static_cast<T>(srcArr[ix]); };
+			auto init = [&srcArr](T& val, u32 ix) { val = static_cast<T>(srcArr[ix]); };
 			forEach(init);
 		};
 
 		constexpr T scalar() {
 			T res = 0;
-			auto sqrElem = [&res](const T& val, const u32& ix) mutable { res += (val * val); };
+			auto sqrElem = [&res](const T& val, u32 ix) mutable { res += (val * val); };
 			forEach(sqrElem);
 			return static_cast<T>(std::sqrt(res));
 		};
 
 		constexpr T scalar() const {
 			T res = 0;
-			auto sqrElem = [&res](const T& val, const u32& ix) mutable { res += (val * val); };
+			auto sqrElem = [&res](const T& val, u32 ix) mutable { res += (val * val); };
 			forEach(sqrElem);
 			return static_cast<T>(std::sqrt(res));
 		};
 
 		void normalize() {
 			T scal = scalar();
-			auto normal = [&scal](T& val, const u32& ix) { val /= scal; };
+			auto normal = [&scal](T& val, u32 ix) { val /= scal; };
 			forEach(normal);
 		};
 
 		constexpr vector<T, X> normalized() {
 			vector<T, X> res(arr);
 			T scal = scalar();
-			auto normal = [&scal](T& val, const u32& ix) { val /= scal; };
+			auto normal = [&scal](T& val, u32 ix) { val /= scal; };
 			res.forEach(normal);
 			return res;
 		};
@@ -109,45 +108,45 @@ namespace nl {
 			vector<T, X> res(arr);
 			T scal = scalar();
 			if (scal == static_cast<T>(0)) scal = static_cast<T>(1);
-			auto normal = [&scal](T& val, const u32& ix) { val /= scal; };
+			auto normal = [&scal](T& val, u32 ix) { val /= scal; };
 			res.forEach(normal);
 			return res;
 		};
 
 		constexpr vector<T, X>& operator+=(const vector<T, X>& rvec) {
-			auto sum = [&rvec](T& val, const u32& ix) { val += rvec[ix]; };
+			auto sum = [&rvec](T& val, u32 ix) { val += rvec[ix]; };
 			forEach(sum);
 			return *this;
 		};
 
 		constexpr vector<T, X>& operator-=(const vector<T, X>& rvec) {
-			auto sub = [&rvec](T& val, const u32& ix) { val -= rvec[ix]; };
+			auto sub = [&rvec](T& val, u32 ix) { val -= rvec[ix]; };
 			forEach(sub);
 			return *this;
 		};
 
-		constexpr vector<T, X>& operator*=(const T& rval) {
-			auto mult = [&rval](T& val, const u32& ix) { val *= rval; };
+		constexpr vector<T, X>& operator*=(T rval) {
+			auto mult = [&rval](T& val, u32 ix) { val *= rval; };
 			forEach(mult);
 			return *this;
 		};
 
-		constexpr vector<T, X>& operator/=(const T& rval) {
-			auto div = [&rval](T& val, const u32& ix) { val /= rval; };
+		constexpr vector<T, X>& operator/=(T rval) {
+			auto div = [&rval](T& val, u32 ix) { val /= rval; };
 			forEach(div);
 			return *this;
 		};
 		
 		constexpr T dotprod(const vector<T, X>& rvec) {
 			T prod = static_cast<T>(0);
-			auto getProd = [&prod, &rvec](const T& val, const u32& ix) { prod += val * rvec[ix]; };
+			auto getProd = [&prod, &rvec](const T& val, u32 ix) { prod += val * rvec[ix]; };
 			forEach(getProd);
 			return prod;
 		};
 
 		constexpr T dotprod(const vector<T, X>& rvec) const {
 			T prod = static_cast<T>(0);
-			auto getProd = [&prod, &rvec](const T& val, const u32& ix) { prod += val * rvec[ix]; };
+			auto getProd = [&prod, &rvec](const T& val, u32 ix) { prod += val * rvec[ix]; };
 			forEach(getProd);
 			return prod;
 		};
@@ -157,32 +156,32 @@ namespace nl {
 		};
 
 		template<u32 Y> constexpr vector(const vector<T, Y>& src) {
-			auto resize = [&src](T& val, const u32& ix) { val = ix < Y ? src[ix] : static_cast<T>(0); };
+			auto resize = [&src](T& val, u32 ix) { val = ix < Y ? src[ix] : static_cast<T>(0); };
 			forEach(resize);
 		};
 
 		template<u32 Y> constexpr vector(const vector<T, Y>& src, const T& fillRest) {
-			auto resize = [&src, &fillRest](T& val, const u32& ix) { val = ix < Y ? src[ix] : fillRest; };
+			auto resize = [&src, &fillRest](T& val, u32 ix) { val = ix < Y ? src[ix] : fillRest; };
 			forEach(resize);
 		};
 
 		template<u32 Y> constexpr vector(const std::array<T, Y>& srcArr) {
-			auto resize = [&srcArr](T& val, const u32& ix) { val = ix < Y ? srcArr[ix] : static_cast<T>(0); };
+			auto resize = [&srcArr](T& val, u32 ix) { val = ix < Y ? srcArr[ix] : static_cast<T>(0); };
 			forEach(resize);
 		};
 
 		template<u32 Y> constexpr vector(const std::array<T, Y>& srcArr, const T& fillRest) {
-			auto resize = [&srcArr, &fillRest](T& val, const u32& ix) { val = ix < Y ? srcArr[ix] : fillRest; };
+			auto resize = [&srcArr, &fillRest](T& val, u32 ix) { val = ix < Y ? srcArr[ix] : fillRest; };
 			forEach(resize);
 		};
 
 		void store(T* target) {
-			auto mod = [&target](const T& val, const u32& ix) mutable { target[ix] = val; };
+			auto mod = [&target](const T& val, u32 ix) mutable { target[ix] = val; };
 			forEach(mod);
 		};
 
 		void store(T* target) const {
-			auto mod = [&target](const T& val, const u32& ix) mutable { target[ix] = val; };
+			auto mod = [&target](const T& val, u32 ix) mutable { target[ix] = val; };
 			forEach(mod);
 		};
 
@@ -205,7 +204,7 @@ namespace nl {
 };
 
 template<typename T, nl::u32 X> std::ostream& operator<<(std::ostream& out, const nl::vector<T, X> rvec) {
-	auto log = [&out](const T& val, const nl::u32& ix) { out << val << " "; };
+	auto log = [&out](const T& val, nl::u32 ix) { out << val << " "; };
 	rvec.forEach(log);
 	return out << "\n";
 };
@@ -226,11 +225,11 @@ template<typename T, nl::u32 X> constexpr nl::vector<T, X> operator-(nl::vector<
 	return lvec -= rvec;
 };
 
-template<typename T, nl::u32 X> constexpr nl::vector<T, X> operator*(nl::vector<T, X> lvec, const T& rval) {
+template<typename T, nl::u32 X> constexpr nl::vector<T, X> operator*(nl::vector<T, X> lvec, T rval) {
 	return lvec *= rval;
 };
 
-template<typename T, nl::u32 X> constexpr nl::vector<T, X> operator/(nl::vector<T, X> lvec, const T& rval) {
+template<typename T, nl::u32 X> constexpr nl::vector<T, X> operator/(nl::vector<T, X> lvec, T rval) {
 	return lvec /= rval;
 };
 
@@ -272,9 +271,9 @@ namespace nl {
 	template<typename T> using vec6 = vector<T, 6>;
 };
 
-template<typename T, nl::u32 X> bool operator==(const nl::vector<T, X>& lvec, const nl::vector<T, X>& rvec) {
+template<typename T, nl::u32 X> constexpr bool operator==(const nl::vector<T, X>& lvec, const nl::vector<T, X>& rvec) {
 	bool equal = true;
-	auto comp = [&rvec, &equal](const T& val, const nl::u32& ix) mutable { equal &= (val == rvec[ix]); };
+	auto comp = [&rvec, &equal](const T& val, nl::u32 ix) mutable { equal &= (val == rvec[ix]); };
 	lvec.forEach(comp);
 	return equal;
 };
@@ -282,7 +281,7 @@ template<typename T, nl::u32 X> bool operator==(const nl::vector<T, X>& lvec, co
 template<typename T, nl::u32 X> struct std::equal_to<nl::vector<T, X>> {
 	bool operator()(const nl::vector<T, X>& lvec, const nl::vector<T, X>& rvec) const {
 		bool equal = true;
-		auto comp = [&rvec, &equal](const T& val, const nl::u32& ix) mutable { equal &= (val == rvec[ix]); };
+		auto comp = [&rvec, &equal](const T& val, nl::u32 ix) mutable { equal &= (val == rvec[ix]); };
 		lvec.forEach(comp);
 		return equal;
 	};
@@ -291,10 +290,8 @@ template<typename T, nl::u32 X> struct std::equal_to<nl::vector<T, X>> {
 template<typename T, nl::u32 X> struct std::hash<nl::vector<T, X>> {
 	std::size_t operator()(nl::vector<T, X> const& vec) const {
 		std::size_t res;
-		auto hash = [&res](const T& val, const nl::u32& ix) mutable { res <<= 1; res ^= std::hash<T>{}(val); };
+		auto hash = [&res](const T& val, nl::u32 ix) mutable { res = (res << 19) ^ (res >> 13); res ^= std::hash<T>{}(val); };
 		vec.forEach(hash);
 		return res;
 	};
 };
-
-#endif
